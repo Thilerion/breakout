@@ -102,7 +102,7 @@ describe("set area method and related properties", () => {
 	})
 })
 
-describe.only("calculate relative block widths", () => {
+describe("calculate relative block widths", () => {
 	let marginPercentage, availableWidth, cols;
 	let blockWidth, blockXMargin, leftovers;
 
@@ -112,18 +112,76 @@ describe.only("calculate relative block widths", () => {
 		marginPercentage = testLayout2.blockMargin.x;
 		availableWidth = blockLayout.blockAreaWidth;
 		cols = testLayout2.cols;
+	})
 
-		({ blockWidth, blockXMargin, leftovers } = blockLayout.calculateRelativeBlockWidths(marginPercentage, availableWidth, cols));
+	test("returns blockWidth, blockXMargin, and leftovers", () => {
+		const result = blockLayout._calculateRelativeBlockWidths(marginPercentage, availableWidth, cols);
+		expect(result).toHaveProperty('blockWidth');
+		expect(result).toHaveProperty('blockXMargin');
+		expect(result).toHaveProperty('leftovers');
 	})
 
 	test("block widths, margins, and leftovers equal available width", () => {
+		({ blockWidth, blockXMargin, leftovers } = blockLayout._calculateRelativeBlockWidths(marginPercentage, availableWidth, cols));
 		const total = (blockWidth * cols) + (blockXMargin * (cols - 1)) + leftovers;
 		expect(total).toBe(availableWidth);
 	})
 
 	test("margin is correct percentage of margin+block", () => {
+		({ blockWidth, blockXMargin, leftovers } = blockLayout._calculateRelativeBlockWidths(marginPercentage, availableWidth, cols));
 		const toCheck = blockXMargin;
 		const expected = (blockWidth + blockXMargin) * marginPercentage;
 		expect(Math.abs(toCheck - expected)).toBeLessThan(1);
 	})
 })
+
+describe.only("calculate relative block heights", () => {
+
+	beforeEach(() => {
+		blockLayout = BlockLayout.init(testLayout2).setArea(testArea2);
+	})
+
+	test("returns optimal blockHeight and blockYMargin when enough space", () => {
+		const res = blockLayout._calculateRelativeBlockHeights(0.1, 100, { min: 0.1, optimal: 0.5 }, 1000, 10);
+		
+		console.log(res);
+
+		const totalSpace = (res.blockHeight * 10) + (res.blockYMargin * 9);
+		expect(totalSpace).toBeLessThanOrEqual(1000);
+
+		expect()
+	})
+
+	test("returns minimal blockHeight and blockYMargin when more space needed than available", () => {
+		const res = blockLayout._calculateRelativeBlockHeights(0.1, 100, { min: 0.5, optimal: 0.6}, 1000, 20);
+		
+		console.log(res);
+
+		const totalSpace = (res.blockHeight * 20) + (res.blockYMargin * 19);
+		expect(totalSpace).toBeGreaterThan(1000);
+	})
+
+	test("returns available height and margin when space needed is more than optimal, but less than available", () => {
+		const res = blockLayout._calculateRelativeBlockHeights(0.1, 100, { min: 0.1, optimal: 2.5 }, 1000, 10);
+		
+		console.log(res);
+
+		const totalSpace = (res.blockHeight * 10) + (res.blockYMargin * 9);
+		expect(totalSpace).toBeLessThanOrEqual(1000);
+	})
+})
+
+/*
+describe("position blocks method", () => {
+	beforeEach(() => {
+		blockLayout = BlockLayout.init(testLayout2).setArea(testArea2);
+	})
+
+	test("returns itself", () => {
+		expect(blockLayout.positionBlocks()).toBe(blockLayout);
+	})
+
+	test("calls '_calculateRelativeBlockWidths' with blockMargin, width, cols", () => {
+
+	})
+})*/

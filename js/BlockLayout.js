@@ -56,25 +56,7 @@ export default class BlockLayout {
 		return this;
 	}
 
-	calculateRelativeBlockWidths(blockMargin, availableWidth, cols) {
-		/*const totalMargin = blockMargin * availableWidth;
-		const totalBlockWidth = ((1 - blockMargin) * availableWidth);
-		const rawBlockWidth = totalBlockWidth / cols;			
-		const rawBlockXMargin = totalMargin / (cols - 1);
-
-		const leftoverWidth = (rawBlockWidth % 1);
-		const leftoverXMargin = (rawBlockXMargin % 1);
-
-		const blockWidth = rawBlockWidth - leftoverWidth;
-		const blockXMargin = rawBlockXMargin - leftoverXMargin;
-
-		//add all leftovers to left and right sides
-		const totalLeftoverWidth = leftoverWidth * cols;
-		const totalLeftoverXMargin = leftoverXMargin * (cols - 1);
-		const leftovers = ((totalLeftoverWidth + totalLeftoverXMargin) / 2);
-
-		return { blockWidth, blockXMargin, leftovers };*/
-
+	_calculateRelativeBlockWidths(blockMargin, availableWidth, cols) {
 		const blockRatio = (1 - blockMargin) * cols;
 		const marginRatio = blockMargin * (cols - 1);
 		const totalRatio = blockRatio + marginRatio;
@@ -92,6 +74,29 @@ export default class BlockLayout {
 		return { blockWidth, blockXMargin: marginWidth, leftovers };
 	}
 
+	_calculateRelativeBlockHeights(blockMargin, blockWidth, heightRatios, availableHeight, rows) {
+		const marginSpace = (rows + (rows - 1) * blockMargin);
+		const availableSpace = (availableHeight / rows) * (rows + blockMargin);
+		const minimumNeededSpace = marginSpace * (blockWidth * heightRatios.min);
+		const optimalNeededSpace = marginSpace * (blockWidth * heightRatios.optimal);
+
+		let blockHeight, blockYMargin;
+
+		if (optimalNeededSpace <= availableSpace) {
+			blockHeight = blockWidth * heightRatios.optimal;
+			blockYMargin = Math.floor(blockHeight * blockMargin);
+		} else if (availableSpace < minimumNeededSpace) {
+			blockHeight = blockWidth * heightRatios.min;
+			blockYMargin = Math.floor(blockHeight * blockMargin);
+		} else {
+			const availablePerBlock = availableSpace / rows;
+			blockHeight = availablePerBlock * (1 - blockMargin);
+			blockYMargin = Math.floor(availablePerBlock * blockMargin);
+		}
+
+		return { blockHeight, blockYMargin };
+	}
+
 	positionBlocks() {
 		const { x0, y0 } = this.blockArea;
 
@@ -107,33 +112,16 @@ export default class BlockLayout {
 
 		if (this.blockMargin.x < 1) {
 			//Relative to space
-			({ leftovers, blockXMargin, blockWidth } = this.calculateRelativeBlockWidths(this.blockMargin.x, availableWidth, cols));
+			({ leftovers, blockXMargin, blockWidth } = this._calculateRelativeBlockWidths(this.blockMargin.x, availableWidth, cols));
 
-			this.leftoverArea = Math.floor(leftovers / 2);
+			this.leftoverArea = Math.round(leftovers / 2);
 
 			console.log({ availableWidth, leftovers, blockXMargin, blockWidth });
 		} else {
 			//Absolute in pixels
 		}
 		
-		const optimalBlockH = Math.round(blockWidth * this.blockHeightRatio.optimal);
-
-		const spaceYPerBlock = availableHeight / rows;
-
-		if (spaceYPerBlock >= optimalBlockH) {
-			blockHeight = optimalBlockH;
-		} else {
-			const minBlockH = Math.round(blockWidth * this.blockHeightRatio.min);
-			if (minBlockH > spaceYPerBlock) {
-				console.warn("Using minimum block height specified in layout, but this won't fit!");
-				blockHeight = minBlockH;
-			} else {
-				blockHeight = spaceYPerBlock;
-			}
-		}
-
-		blockYMargin = Math.floor(blockHeight * this.blockMargin.y);
-
+		({ blockHeight, blockYMargin } = this._calculateRelativeBlockHeights(this.blockMargin.y, blockWidth, this.blockHeightRatio, availableHeight, rows));
 
 		for (let y = 0; y < rows; y++) {
 			for (let x = 0; x < cols; x++) {

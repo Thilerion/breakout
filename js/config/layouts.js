@@ -12,15 +12,15 @@ const layoutA = {
 		top: 60,
 		left: 60,
 		right: 60,
-		bottom: 375
+		bottom: 200
 	},
 	blockMargin: {
 		x: 0.1,
-		y: 0.5
+		y: 0.3
 	},
 	blockHeightRatio: {
 		min: 0.3,
-		optimal: 0.4
+		optimal: 0.5
 	},
 	rows: 7,
 	cols: 8,
