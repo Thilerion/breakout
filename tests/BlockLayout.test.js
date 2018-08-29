@@ -117,11 +117,13 @@ describe.only("calculate relative block widths", () => {
 	})
 
 	test("block widths, margins, and leftovers equal available width", () => {
-		const total = (blockWidth * cols) + (blockXMargin * (cols - 1)) + leftovers * 2;
+		const total = (blockWidth * cols) + (blockXMargin * (cols - 1)) + leftovers;
 		expect(total).toBe(availableWidth);
 	})
 
 	test("margin is correct percentage of margin+block", () => {
-		expect(blockXMargin).toBe((blockWidth + blockXMargin) * marginPercentage);
+		const toCheck = blockXMargin;
+		const expected = (blockWidth + blockXMargin) * marginPercentage;
+		expect(Math.abs(toCheck - expected)).toBeLessThan(1);
 	})
 })
