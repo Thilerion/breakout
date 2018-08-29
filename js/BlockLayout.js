@@ -1,4 +1,3 @@
-import { blockOptions } from './config/index.js';
 import Block from './Block.js';
 
 export default class BlockLayout {
@@ -106,22 +105,11 @@ export default class BlockLayout {
 		const rows = this.rows;
 		const cols = this.cols;
 
-		let blockXMargin, blockYMargin;
-		let blockWidth, blockHeight;
-		let leftovers;
+		const { leftovers, blockXMargin, blockWidth } = this._calculateRelativeBlockWidths(this.blockMargin.x, availableWidth, cols);
 
-		if (this.blockMargin.x < 1) {
-			//Relative to space
-			({ leftovers, blockXMargin, blockWidth } = this._calculateRelativeBlockWidths(this.blockMargin.x, availableWidth, cols));
-
-			this.leftoverArea = Math.round(leftovers / 2);
-
-			console.log({ availableWidth, leftovers, blockXMargin, blockWidth });
-		} else {
-			//Absolute in pixels
-		}
+		this.leftoverArea = Math.round(leftovers / 2);
 		
-		({ blockHeight, blockYMargin } = this._calculateRelativeBlockHeights(this.blockMargin.y, blockWidth, this.blockHeightRatio, availableHeight, rows));
+		const { blockHeight, blockYMargin } = this._calculateRelativeBlockHeights(this.blockMargin.y, blockWidth, this.blockHeightRatio, availableHeight, rows);
 
 		for (let y = 0; y < rows; y++) {
 			for (let x = 0; x < cols; x++) {
@@ -134,7 +122,6 @@ export default class BlockLayout {
 				}
 			}
 		}
-		console.log(this.blocks);
 		return this;
 	}
 

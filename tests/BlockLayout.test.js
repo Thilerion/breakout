@@ -1,5 +1,7 @@
 import BlockLayout from '../js/BlockLayout.js';
 import Block from '../js/Block.js';
+jest.mock('../js/Block.js');
+
 import { layoutA } from '../js/config/layouts.js';
 
 const testLayout = {
@@ -67,11 +69,13 @@ describe("static init method", () => {
 	})
 
 	test("generates a new Block in an array for every truthy value", () => {
+		Block.mockClear();
+		expect(Block).not.toHaveBeenCalled();
+		blockLayout = BlockLayout.init(testLayout);
 		expect(blockLayout.blocks[0][0]).toBeInstanceOf(Block);
 		expect(blockLayout.blocks[1][1]).toBeFalsy();
 		expect(blockLayout.blocks[1][2]).toBeInstanceOf(Block);
-		
-		expect([].concat(...blockLayout.blocks).filter(val => val != null)).toHaveLength(9);
+		expect(Block).toHaveBeenCalledTimes(testLayout.amount);
 	})
 })
 
@@ -135,7 +139,7 @@ describe("calculate relative block widths", () => {
 	})
 })
 
-describe.only("calculate relative block heights", () => {
+describe("calculate relative block heights", () => {
 
 	beforeEach(() => {
 		blockLayout = BlockLayout.init(testLayout2).setArea(testArea2);
@@ -171,9 +175,10 @@ describe.only("calculate relative block heights", () => {
 	})
 })
 
-/*
-describe("position blocks method", () => {
+
+describe.only("position blocks method", () => {
 	beforeEach(() => {
+		Block.mockClear();
 		blockLayout = BlockLayout.init(testLayout2).setArea(testArea2);
 	})
 
@@ -181,7 +186,10 @@ describe("position blocks method", () => {
 		expect(blockLayout.positionBlocks()).toBe(blockLayout);
 	})
 
-	test("calls '_calculateRelativeBlockWidths' with blockMargin, width, cols", () => {
-
+	test("sets position for each Block instance", () => {
+		expect(Block).toHaveBeenCalledTimes(testLayout2.amount);
+		expect(Block.mock.instances[0].setPosition).not.toHaveBeenCalled();
+		blockLayout.positionBlocks();
+		expect(Block.mock.instances[0].setPosition).toHaveBeenCalledTimes(1);
 	})
-})*/
+})
