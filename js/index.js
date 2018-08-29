@@ -1,8 +1,9 @@
 import UI from './ui.js';
 import BlockLayout from './BlockLayout.js';
 import Paddle from './Paddle.js';
+import Ball from './Ball.js';
 
-import { paddleOptions } from './config/index.js'
+import { gameOptions } from './config/index.js'
 
 import { layoutA } from './config/layouts.js';
 
@@ -50,9 +51,11 @@ class Game {
 			.setArea(this.area)
 			.positionBlocks();
 		
-		console.log(this.area);
-		this.paddle = new Paddle(paddleOptions)
-			.setPosition(paddleOptions.bottomPadding, this.area);
+		this.paddle = new Paddle(gameOptions.paddle)
+			.setPosition(gameOptions.bottomPadding, this.area);
+		
+		this.ball = new Ball(gameOptions.ball)
+			.setPosition(this.paddle.y, this.area);
 		
 		return this;
 	}
@@ -80,10 +83,12 @@ class Game {
 		this.ctx.clearRect(this.area.x0, this.area.x0, (this.area.x1 - this.area.x0), (this.area.y1 - this.area.y0));
 		this.blocks.render(this.ctx, "#CCCCCC");
 		this.paddle.render(this.ctx, "#CCCCCC");
+		this.ball.render(this.ctx, "#CCCCCC");
 		return this;
 	}
 
 	update() {
+		this.ball.move();
 		if (this.keysActive.includes("ArrowLeft")) {
 			this.paddle.move(-1);
 		} else if (this.keysActive.includes("ArrowRight")) {

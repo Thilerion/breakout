@@ -4,18 +4,18 @@ export default class Paddle {
 		this.height = height;
 		this.speed = speed;
 
-		this.x, this.y, this.area;
+		this.x, this.y, this.gameArea, this.bottomPadding;
 	}
 
-	setPosition(bottomPadding, area) {
+	setPosition(bottomPadding, gameArea) {
 		this.bottomPadding = bottomPadding;
-		this.area = area;
+		this.gameArea = gameArea;
 
-		const areaWidth = this.area.x1 - this.area.x0;
-		const center = this.area.x0 + (areaWidth / 2);
+		const areaWidth = this.gameArea.x1 - this.gameArea.x0;
+		const center = this.gameArea.x0 + (areaWidth / 2);
 		this.x = center - (this.width / 2);
 
-		this.y = this.area.y1 - this.height - this.bottomPadding;
+		this.y = this.gameArea.y1 - this.height - this.bottomPadding;
 
 		return this;
 	}
@@ -25,10 +25,10 @@ export default class Paddle {
 
 		console.log(newX);
 
-		if (newX < this.area.x0) {
-			newX = this.area.x0;
-		} else if (newX + this.width > this.area.x1) {
-			newX = this.area.x1 - this.width;
+		if (newX < this.gameArea.x0) {
+			newX = this.gameArea.x0;
+		} else if (newX + this.width > this.gameArea.x1) {
+			newX = this.gameArea.x1 - this.width;
 		}
 
 		this.x = newX;

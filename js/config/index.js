@@ -7,11 +7,17 @@ const uiOptions = {
 	mainColor: "#BBB"
 }
 
-const paddleOptions = {
-	width: 140,
-	height: 30,
-	speed: 5,
+const gameOptions = {
+	paddle: {
+		width: 140,
+		height: 30,
+		speed: 8,
+	},
+	ball: {
+		diameter: 7,
+		speed: 4
+	},
 	bottomPadding: 20
 }
 
-export { uiOptions, paddleOptions };
+export { uiOptions, gameOptions };
