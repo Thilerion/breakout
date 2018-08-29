@@ -14,8 +14,28 @@ class Game {
 		this.ui;
 		this.layout;
 		this.area;
+
+		this.keysActive = [];
 		
 		this.running = false;
+	}
+
+	keyDown(e) {
+		if (!this.keysActive.includes(e.key)) {
+			this.keysActive.push(e.key);
+		}
+		console.log(this.keysActive);
+	}
+
+	keyUp(e) {
+		this.keysActive = this.keysActive.filter(val => val != e.key);	
+		console.log(this.keysActive);
+	}
+
+	initControls() {
+		document.addEventListener("keydown", (e) => this.keyDown(e), false);
+		document.addEventListener("keyup", (e) => this.keyUp(e), false);
+		return this;
 	}
 
 	initUI() {
@@ -57,18 +77,23 @@ class Game {
 	}
 
 	render() {
+		this.ctx.clearRect(this.area.x0, this.area.x0, (this.area.x1 - this.area.x0), (this.area.y1 - this.area.y0));
 		this.blocks.render(this.ctx, "#CCCCCC");
 		this.paddle.render(this.ctx, "#CCCCCC");
 		return this;
 	}
 
 	update() {
-
+		if (this.keysActive.includes("ArrowLeft")) {
+			this.paddle.move(-1);
+		} else if (this.keysActive.includes("ArrowRight")) {
+			this.paddle.move(1);
+		}
 	}
 }
 
 function createGame() {
-	return new Game().setLayout(layoutA).initUI().initBlocks().render().start();
+	return new Game().setLayout(layoutA).initUI().initControls().initBlocks().render().start();
 }
 
 const newGame = createGame();

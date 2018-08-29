@@ -10,7 +10,7 @@ const uiOptions = {
 const paddleOptions = {
 	width: 140,
 	height: 30,
-	speed: 1,
+	speed: 5,
 	bottomPadding: 20
 }
 
