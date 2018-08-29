@@ -1,5 +1,8 @@
 import UI from './ui.js';
 import BlockLayout from './BlockLayout.js';
+import Paddle from './Paddle.js';
+
+import { paddleOptions } from './config/index.js'
 
 import { layoutA } from './config/layouts.js';
 
@@ -22,7 +25,15 @@ class Game {
 	}
 
 	initBlocks() {
-		this.blocks = BlockLayout.init(this.layout).setArea(this.area).positionBlocks();
+		this.blocks = BlockLayout
+			.init(this.layout)
+			.setArea(this.area)
+			.positionBlocks();
+		
+		console.log(this.area);
+		this.paddle = new Paddle(paddleOptions)
+			.setPosition(paddleOptions.bottomPadding, this.area);
+		
 		return this;
 	}
 
@@ -47,6 +58,7 @@ class Game {
 
 	render() {
 		this.blocks.render(this.ctx, "#CCCCCC");
+		this.paddle.render(this.ctx, "#CCCCCC");
 		return this;
 	}
 

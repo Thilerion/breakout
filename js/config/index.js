@@ -7,10 +7,11 @@ const uiOptions = {
 	mainColor: "#BBB"
 }
 
-const blockOptions = {
-	height: 25,
-	minWidth: 40,
-	maxWidth: 70
+const paddleOptions = {
+	width: 140,
+	height: 30,
+	speed: 1,
+	bottomPadding: 20
 }
 
-export { uiOptions, blockOptions };
+export { uiOptions, paddleOptions };
