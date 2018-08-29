@@ -12,6 +12,7 @@
     "babel-jest": "^23.4.2",
     "babel-polyfill": "^6.26.0",
     "babel-preset-env": "^1.7.0",
+    "canvas-prebuilt": "^1.6.5-prerelease.1",
     "jest": "^23.5.0"
   },
   "jest": {

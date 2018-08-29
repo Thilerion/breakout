@@ -1,26 +1,33 @@
 import UI from './ui.js';
-import { BlockLayout, Block } from './blocks.js';
-
-const canvas = document.getElementById("gameCanvas");
-const ctx = canvas.getContext("2d");
+import BlockLayout from './BlockLayout.js';
 
 import { layoutA } from './config/layouts.js';
 
 class Game {
 	constructor() {
-		this.blocks;
+		this.canvas = document.getElementById("gameCanvas");
+		this.ctx = this.canvas.getContext("2d");
+
 		this.ui;
+		this.layout;
+		this.area;
 		
 		this.running = false;
 	}
 
-	init() {
-		let ui = new UI(canvas, ctx).init();
+	initUI() {
+		let ui = new UI(this.canvas, this.ctx).init();
+		this.area = ui.gameArea;
+		return this;
+	}
 
-		const area = ui.gameArea;
+	initBlocks() {
+		this.blocks = BlockLayout.init(this.layout).setArea(this.area).positionBlocks();
+		return this;
+	}
 
-		let blockLayout = BlockLayout.init(layoutA).setArea(area).positionBlocks();
-		this.blocks = blockLayout;
+	setLayout(layout) {
+		this.layout = layout;
 		return this;
 	}
 
@@ -39,7 +46,7 @@ class Game {
 	}
 
 	render() {
-		this.blocks.render(ctx, "#CCCCCC");
+		this.blocks.render(this.ctx, "#CCCCCC");
 		return this;
 	}
 
@@ -48,4 +55,11 @@ class Game {
 	}
 }
 
-export const game = new Game().init().render().start();
+function createGame() {
+	return new Game().setLayout(layoutA).initUI().initBlocks().render().start();
+}
+
+const newGame = createGame();
+
+// For unit tests
+export { Game };

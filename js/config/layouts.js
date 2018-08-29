@@ -15,7 +15,7 @@ const layoutA = {
 		bottom: 375
 	},
 	blockMargin: {
-		x: 0.125,
+		x: 0.1,
 		y: 0.5
 	},
 	blockHeightRatio: {

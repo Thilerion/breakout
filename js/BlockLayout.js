@@ -1,6 +1,7 @@
 import { blockOptions } from './config/index.js';
+import Block from './Block.js';
 
-export class BlockLayout {
+export default class BlockLayout {
 	constructor(rows, cols, amount, blocks, areaPadding, blockMargin, blockHeightRatio) {
 		this.rows = rows;
 		this.cols = cols;
@@ -40,10 +41,10 @@ export class BlockLayout {
 			blocks.push([]);
 			for (let j = 0; j < cols; j++) {
 				if (layoutBlocks[i][j]) {
-					blocks[i].push(new Block());
+					blocks[i][j] = new Block();
 				}
 				else {
-					blocks[i].push(null);
+					blocks[i][j] = null;
 				}
 			}
 		}
@@ -55,10 +56,44 @@ export class BlockLayout {
 		return this;
 	}
 
-	positionBlocks() {
-		const { x0, x1, y0, y1 } = this.blockArea;
+	calculateRelativeBlockWidths(blockMargin, availableWidth, cols) {
+		/*const totalMargin = blockMargin * availableWidth;
+		const totalBlockWidth = ((1 - blockMargin) * availableWidth);
+		const rawBlockWidth = totalBlockWidth / cols;			
+		const rawBlockXMargin = totalMargin / (cols - 1);
 
-		console.log(this.blockArea, this.blockAreaHeight, this.blockAreaWidth);
+		const leftoverWidth = (rawBlockWidth % 1);
+		const leftoverXMargin = (rawBlockXMargin % 1);
+
+		const blockWidth = rawBlockWidth - leftoverWidth;
+		const blockXMargin = rawBlockXMargin - leftoverXMargin;
+
+		//add all leftovers to left and right sides
+		const totalLeftoverWidth = leftoverWidth * cols;
+		const totalLeftoverXMargin = leftoverXMargin * (cols - 1);
+		const leftovers = ((totalLeftoverWidth + totalLeftoverXMargin) / 2);
+
+		return { blockWidth, blockXMargin, leftovers };*/
+
+		const blockRatio = (1 - blockMargin) * cols;
+		const marginRatio = blockMargin * (cols - 1);
+		const totalRatio = blockRatio + marginRatio;
+
+		const totalBlockSpace = Math.round(availableWidth / totalRatio * blockRatio);
+		const totalMarginSpace = Math.round(availableWidth / totalRatio * marginRatio);
+
+		const marginWidth = Math.floor(totalMarginSpace / (cols - 1));
+		const blockWidth = Math.floor(totalBlockSpace / cols);
+
+		//add all leftovers to left and right sides
+		const usedSpace = (marginWidth * (cols - 1)) + (blockWidth * cols);
+		const leftovers = availableWidth - usedSpace;
+
+		return { blockWidth, blockXMargin: marginWidth, leftovers };
+	}
+
+	positionBlocks() {
+		const { x0, y0 } = this.blockArea;
 
 		const availableWidth = this.blockAreaWidth;
 		const availableHeight = this.blockAreaHeight;
@@ -68,30 +103,15 @@ export class BlockLayout {
 
 		let blockXMargin, blockYMargin;
 		let blockWidth, blockHeight;
+		let leftovers;
 
 		if (this.blockMargin.x < 1) {
 			//Relative to space
-			const totalMargin = this.blockMargin.x * availableWidth;
-			const totalBlockWidth = ((1 - this.blockMargin.x) * availableWidth);
-			const rawBlockWidth = totalBlockWidth / cols;			
-			const rawBlockXMargin = totalMargin / (cols - 1);
+			({ leftovers, blockXMargin, blockWidth } = this.calculateRelativeBlockWidths(this.blockMargin.x, availableWidth, cols));
 
-			const leftoverWidth = (rawBlockWidth % 1);
-			const leftoverXMargin = (rawBlockXMargin % 1);
+			this.leftoverArea = Math.floor(leftovers / 2);
 
-			blockWidth = rawBlockWidth - leftoverWidth;
-			blockXMargin = rawBlockXMargin - leftoverXMargin;
-
-			const totalLeftoverWidth = (leftoverWidth * cols);
-			const totalLeftoverXMargin = (leftoverXMargin * (cols - 1));
-
-			//add all leftovers to left and right sides
-			//const leftovers = Math.floor((totalLeftoverWidth + totalLeftoverXMargin) / 2);
-			const leftovers = ((totalLeftoverWidth + totalLeftoverXMargin) / 2);
-			//this.leftoverArea = leftovers;
-			this.leftoverArea = leftovers;
-
-			console.log({ blockWidth, blockXMargin });
+			console.log({ availableWidth, leftovers, blockXMargin, blockWidth });
 		} else {
 			//Absolute in pixels
 		}
@@ -126,6 +146,7 @@ export class BlockLayout {
 				}
 			}
 		}
+		console.log(this.blocks);
 		return this;
 	}
 
@@ -137,26 +158,6 @@ export class BlockLayout {
 				}				
 			}
 		}
-		return this;
-	}
-}
-
-export class Block {
-	constructor() {
-		this.x, this.y, this.w, this.h;
-	}
-
-	setPosition(x, y, w, h) {
-		this.x = x;
-		this.y = y;
-		this.w = w;
-		this.h = h;
-		return this;
-	}
-
-	draw(ctx, color) {
-		ctx.fillStyle = color;
-		ctx.fillRect(this.x, this.y, this.w, this.h);
 		return this;
 	}
 }
