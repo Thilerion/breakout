@@ -10,6 +10,8 @@ class Game {
 	constructor() {
 		this.blocks;
 		this.ui;
+		
+		this.running = false;
 	}
 
 	init() {
@@ -17,17 +19,28 @@ class Game {
 
 		const area = ui.gameArea;
 
-		let blockLayout = BlockLayout.init(layoutA).setBlockSpacing(area);
+		let blockLayout = BlockLayout.init(layoutA).setArea(area).positionBlocks();
 		this.blocks = blockLayout;
 		return this;
 	}
 
-	loop() {
+	start() {
+		this.running = true;
+		requestAnimationFrame(() => this.loop());
+		return this;
+	}
 
+	loop() {
+		requestAnimationFrame(() => this.loop());
+		if (this.running) {
+			this.update();
+		}
+		this.render();
 	}
 
 	render() {
 		this.blocks.render(ctx, "#CCCCCC");
+		return this;
 	}
 
 	update() {
@@ -35,4 +48,4 @@ class Game {
 	}
 }
 
-export const game = new Game().init().render();
+export const game = new Game().init().render().start();

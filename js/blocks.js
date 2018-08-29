@@ -10,7 +10,25 @@ export class BlockLayout {
 		this.blockMargin = blockMargin;
 		this.blockHeightRatio = blockHeightRatio;
 
-		this.areaHeight, this.areaWidth;
+		this.area;
+		this.leftoverArea;
+	}
+
+	get blockAreaWidth() {
+		return this.blockArea.x1 - this.blockArea.x0;
+	}
+
+	get blockAreaHeight() {
+		return this.blockArea.y1 - this.blockArea.y0;
+	}
+
+	get blockArea() {
+		return {
+			x0: this.area.x0 + this.areaPadding.left,
+			x1: this.area.x1 - this.areaPadding.right,
+			y0: this.area.y0 + this.areaPadding.top,
+			y1: this.area.y1 - this.areaPadding.bottom
+		}
 	}
 
 	static init(layout) {
@@ -32,17 +50,18 @@ export class BlockLayout {
 		return new BlockLayout(rows, cols, amount, blocks, areaPadding, blockMargin, blockHeightRatio);
 	}
 
-	setBlockSpacing(area) {
-		const blockAreaWidth = area.x1 - area.x0 - this.areaPadding.left - this.areaPadding.right;
-		const blockAreaHeight = area.y1 - area.y0 - this.areaPadding.top - this.areaPadding.bottom;
+	setArea(area) {
+		this.area = area;
+		return this;
+	}
 
-		let x0 = area.x0 + this.areaPadding.left;
-		const x1 = x0 + blockAreaWidth;
-		const y0 = area.y0 + this.areaPadding.top;
-		const y1 = y0 + blockAreaHeight;
+	positionBlocks() {
+		const { x0, x1, y0, y1 } = this.blockArea;
 
-		const availableWidth = x1 - x0;
-		const availableHeight = y1 - y0;
+		console.log(this.blockArea, this.blockAreaHeight, this.blockAreaWidth);
+
+		const availableWidth = this.blockAreaWidth;
+		const availableHeight = this.blockAreaHeight;
 
 		const rows = this.rows;
 		const cols = this.cols;
@@ -63,12 +82,14 @@ export class BlockLayout {
 			blockWidth = rawBlockWidth - leftoverWidth;
 			blockXMargin = rawBlockXMargin - leftoverXMargin;
 
-			const totalLeftoverWidth = Math.round(leftoverWidth * cols);
-			const totalLeftoverXMargin = Math.round(leftoverXMargin * (cols - 1));
+			const totalLeftoverWidth = (leftoverWidth * cols);
+			const totalLeftoverXMargin = (leftoverXMargin * (cols - 1));
 
 			//add all leftovers to left and right sides
-			const leftovers = Math.floor((totalLeftoverWidth + totalLeftoverXMargin) / 2);
-			x0 += leftovers;
+			//const leftovers = Math.floor((totalLeftoverWidth + totalLeftoverXMargin) / 2);
+			const leftovers = ((totalLeftoverWidth + totalLeftoverXMargin) / 2);
+			//this.leftoverArea = leftovers;
+			this.leftoverArea = leftovers;
 
 			console.log({ blockWidth, blockXMargin });
 		} else {
@@ -98,7 +119,7 @@ export class BlockLayout {
 			for (let x = 0; x < cols; x++) {
 				if (this.blocks[y][x] != null) {
 					let block = this.blocks[y][x];
-					const left = x0 + x * (blockWidth + blockXMargin);
+					const left = (x0 + this.leftoverArea) + x * (blockWidth + blockXMargin);
 					const top = y0 + y * (blockHeight + blockYMargin);
 					
 					block.setPosition(left, top, blockWidth, blockHeight);
