@@ -9,14 +9,14 @@ const layoutA = {
 		[0, 0, 1, 1, 1, 1, 0, 0]
 	],
 	areaPadding: {
-		top: 60,
-		left: 60,
-		right: 60,
-		bottom: 200
+		top: 40,
+		left: 40,
+		right: 40,
+		bottom: 300
 	},
 	blockMargin: {
 		x: 0.1,
-		y: 0.3
+		y: 0.25
 	},
 	blockHeightRatio: {
 		min: 0.3,

@@ -59,7 +59,7 @@ function createGame() {
 	return new Game().setLayout(layoutA).initUI().initBlocks().render().start();
 }
 
-// const newGame = createGame();
+const newGame = createGame();
 
 // For unit tests
 export { Game };
