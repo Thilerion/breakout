@@ -25,12 +25,10 @@ class Game {
 		if (!this.keysActive.includes(e.key)) {
 			this.keysActive.push(e.key);
 		}
-		console.log(this.keysActive);
 	}
 
 	keyUp(e) {
 		this.keysActive = this.keysActive.filter(val => val != e.key);	
-		console.log(this.keysActive);
 	}
 
 	initControls() {
@@ -89,11 +87,15 @@ class Game {
 
 	update() {
 		this.ball.move();
+
+		let paddleDir = 0;
 		if (this.keysActive.includes("ArrowLeft")) {
-			this.paddle.move(-1);
-		} else if (this.keysActive.includes("ArrowRight")) {
-			this.paddle.move(1);
+			paddleDir -= 1;
 		}
+		if (this.keysActive.includes("ArrowRight")) {
+			paddleDir += 1;
+		}
+		this.paddle.move(paddleDir);
 	}
 }
 
