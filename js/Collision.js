@@ -130,10 +130,73 @@ function testLineSegmentLineSegment(lineA, lineB) {
 
 	if (!intersection) return intersection;
 
-	if (testPointLine(intersection, lineA) && testPointLine(intersection, lineB)) {
+	if (testPointOnLine(intersection, lineA) && testPointOnLine(intersection, lineB)) {
 		return intersection;
 	} else {
 		console.warn(`Intersection found (${intersection.x}, ${intersection.y}) was not on both lines.`);
 		return null;
 	}
+}
+
+function testClosestPointLinePoint(point, line) {
+	const { x, y } = point.pos;
+	const [l1, l2] = line.points;
+
+	// Take the endpoints of the line segment and turn it into an equation of the form Ax + By = C
+	const A = l2.y - l1.y;
+	const B = l1.x - l2.x;
+	const C1 = A * l1.x + B * l1.y;
+
+	// The equation of the line perpendicular to the initial line segment is given by  -Bx + Ay = C
+	// but this time(x, y) is the given point so that the new equation crosses through the given point
+	const C2 = -B * x + A * y;
+
+	// Find the determinant
+	const det = A * A + B * B;
+
+	let Cx, Cy;
+	// Use Cramer's Rule to solve for the point of intersection of the original line and the perpendicular line,
+	// and that gives us the closest point on the given line to given point
+	if (det !== 0) {
+		Cx = (A * C1 - B * C2) / det;
+		Cy = (A * C2 + B * C1) / det;
+	} else {
+		// If determinant = 0, the point is on the line and the closest point to the line is the point itself
+		Cx = x;
+		Cy = y;
+	}
+
+	return new Point(Cx, Cy);	
+}
+
+function testClosestPointLineSegmentPoint(point, line) {
+	const closest = testClosestPointLinePoint(point, line);
+	if (testPointOnLine(closest, line)) {
+		return closest;
+	} else {
+		console.warn("The closest point is not on the line. If this is checking a circle, the radius may have hit the endpoint though.");
+	}
+}
+
+function getDistanceBetweenPoints(pointA, pointB) {
+	const dx = pointA.x - pointB.x;
+	const dy = pointA.y - pointB.y;
+
+	return Math.sqrt(dx * dx + dy * dy);
+}
+
+// TODO: REPLACES NULLS WITH DISTANCE OBJECTS
+// TODO: WATCH OUT WITH CIRCLE + LINE SEGMENT COLLISION! THERE CAN STILL BE A COLLISION IF testClosestPointLineSegmentPoint SAYS NOT, BECAUSE THE RADIUS OF THE CIRCLE COULD HAVE HIT THE LINE
+//		 SO, https://ericleong.me/old/research/leong10.pdf PAGE 10:
+
+/* 
+The point returned is definitely on the line, so if the x values are between the minimum and maximum x values
+	of the endpoints of the line and the same is true for the y axis, then the point returned is on the line segment.
+	Special consideration must be made for the endpoints. This is done by also checking if the endpoints
+	are less than the radius away using the distance formula.
+*/
+
+function testCircleLineSegment(circle, line) {
+	// Determine distance from circle to line by finding closest point on the line to the center of the circle
+	
 }
