@@ -14,8 +14,8 @@ const gameOptions = {
 		speed: 8,
 	},
 	ball: {
-		diameter: 7,
-		speed: 4
+		radius: 5,
+		speed: 6
 	},
 	bottomPadding: 20
 }

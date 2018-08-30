@@ -1,7 +1,7 @@
 export default class Ball {
-	constructor({ diameter, speed }) {
-		this.diameter = diameter;
-		this.speed = speed * 5;
+	constructor({ radius, speed }) {
+		this.radius = radius;
+		this.speed = speed * 1;
 
 		//				270 (1.5 * PI)
 		// 180 (PI)						0 or 360 (0 or 2 * PI)
@@ -9,7 +9,11 @@ export default class Ball {
 		//this.angle = 315;
 
 		this.x, this.y, this.gameArea, this.paddleX;
-		this.vx = -0.738, this.vy = -1;
+		this.vx = -0.6, this.vy = -1;
+	}
+
+	get diameter() {
+		return this.radius * 2;
 	}
 
 	get dx() {
@@ -27,14 +31,14 @@ export default class Ball {
 		const areaWidth = this.gameArea.x1 - this.gameArea.x0;
 		this.x = this.gameArea.x0 + (areaWidth / 2);
 
-		this.y = this.paddleX - (this.diameter * 2);
+		this.y = this.paddleX - (this.radius * 2);
 
 		return this;
 	}
 
 	render(ctx, color) {
 		ctx.beginPath();
-		ctx.arc(this.x, this.y, this.diameter * 2, 0, 2 * Math.PI, false);
+		ctx.arc(this.x, this.y, this.radius * 2, 0, 2 * Math.PI, false);
 		ctx.closePath();
 		ctx.fillStyle = color;
 		ctx.fill();
@@ -65,10 +69,10 @@ export default class Ball {
 	collisionCheck(ballX, ballY, { x0, x1, y0, y1, outside }) {
 		if (!outside) {
 			//walls
-			const right = ballX + this.diameter;
-			const left = ballX - this.diameter;
-			const top = ballY - this.diameter;
-			const bottom = ballY + this.diameter;
+			const right = ballX + this.radius;
+			const left = ballX - this.radius;
+			const top = ballY - this.radius;
+			const bottom = ballY + this.radius;
 
 			let reflections = {
 				top: false,
@@ -78,31 +82,31 @@ export default class Ball {
 			};
 
 			let refAngle;
+			let overlapX = 0;
+			let overlapY = 0;
 
-			// let overlapX = 0;
-			// let overlapY = 0;
 			if (right >= x1) {
 				reflections.right = true;
+				overlapX += right - x1;
 			} else if (left <= x0) {
 				reflections.left = true;
+				overlapX += left - x0;
 			}
 			if (top <= y0) {
 				reflections.top = true;
+				overlapY += y0 - top;
 			} else if (bottom >= y1) {
 				reflections.bottom = true;
+				overlapY += y1 - bottom;
 			}
 
 			if (reflections.left && reflections.top) {
-				debugger;
 				refAngle = 135;
 			} else if (reflections.right && reflections.top) {
-				debugger;
 				refAngle = 225;
 			} else if (reflections.right && reflections.bottom) {
-				debugger;
 				refAngle = 315;
 			} else if (reflections.left && reflections.bottom) {
-				debugger;
 				refAngle = 45;
 			} else if (reflections.left || reflections.right) {
 				refAngle = 90;
@@ -111,7 +115,14 @@ export default class Ball {
 			}
 
 			if (refAngle != null) {
+				this.x += overlapX;
+				this.y += overlapY;
 				this._reflect(refAngle);
+
+				if (this.x + this.dx < x0 || this.x + this.dx > x1 || this.y + this.dy < y0 || this.y + this.dy > y1) {
+					console.warn("collided again!!");
+				}
+
 				return true;
 			}
 			return false;
@@ -119,13 +130,7 @@ export default class Ball {
 	}
 
 	move(area) {
-		//const { dx, dy } = this._calculateVector(this.angle, this.speed);
-		//this.dx = dx;
-		//this.dy = dy;
-
-		if (!this.collisionCheck(this.x, this.y, area)) {
-			this.collisionCheck(this.x + this.dx, this.y + this.dy, area);
-		}
+		this.collisionCheck(this.x + this.dx, this.y + this.dy, area);
 
 		this.x += this.dx;
 		this.y += this.dy;
