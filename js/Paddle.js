@@ -23,8 +23,6 @@ export default class Paddle {
 	move(dir) {
 		let newX = this.x + (this.speed * dir);
 
-		console.log(newX);
-
 		if (newX < this.gameArea.x0) {
 			newX = this.gameArea.x0;
 		} else if (newX + this.width > this.gameArea.x1) {
