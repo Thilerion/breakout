@@ -142,7 +142,6 @@ export default class Ball {
 				} else {
 					this._reflect(0);
 				}
-				console.log(topToBot, botToTop, leftToRight, rightToLeft);
 				return true;
 			}
 		}
