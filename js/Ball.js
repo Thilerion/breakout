@@ -1,7 +1,7 @@
 export default class Ball {
 	constructor({ diameter, speed }) {
 		this.diameter = diameter;
-		this.speed = speed * 2;
+		this.speed = speed * 5;
 
 		//				270 (1.5 * PI)
 		// 180 (PI)						0 or 360 (0 or 2 * PI)
@@ -9,7 +9,7 @@ export default class Ball {
 		//this.angle = 315;
 
 		this.x, this.y, this.gameArea, this.paddleX;
-		this.vx = 0.738, this.vy = -1;
+		this.vx = -0.738, this.vy = -1;
 	}
 
 	get dx() {
@@ -70,17 +70,48 @@ export default class Ball {
 			const top = ballY - this.diameter;
 			const bottom = ballY + this.diameter;
 
-			let reflection;
+			let reflections = {
+				top: false,
+				bottom: false,
+				left: false,
+				right: false
+			};
 
-			if (right >= x1 || left <= x0) {
-				reflection = reflection ? reflection + 90 : 90;
+			let refAngle;
+
+			// let overlapX = 0;
+			// let overlapY = 0;
+			if (right >= x1) {
+				reflections.right = true;
+			} else if (left <= x0) {
+				reflections.left = true;
 			}
-			if (top <= y0 || bottom >= y1) {
-				reflection = reflection != null ? reflection + 360 : 360;
+			if (top <= y0) {
+				reflections.top = true;
+			} else if (bottom >= y1) {
+				reflections.bottom = true;
 			}
 
-			if (reflection != null) {
-				this._reflect(reflection);
+			if (reflections.left && reflections.top) {
+				debugger;
+				refAngle = 135;
+			} else if (reflections.right && reflections.top) {
+				debugger;
+				refAngle = 225;
+			} else if (reflections.right && reflections.bottom) {
+				debugger;
+				refAngle = 315;
+			} else if (reflections.left && reflections.bottom) {
+				debugger;
+				refAngle = 45;
+			} else if (reflections.left || reflections.right) {
+				refAngle = 90;
+			} else if (reflections.top || reflections.bottom) {
+				refAngle = 180;
+			}
+
+			if (refAngle != null) {
+				this._reflect(refAngle);
 				return true;
 			}
 			return false;
