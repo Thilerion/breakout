@@ -67,13 +67,13 @@ export default class Ball {
 	}
 
 	collisionCheck(ballX, ballY, { x0, x1, y0, y1, outside }) {
+		const right = ballX + this.radius;
+		const left = ballX - this.radius;
+		const top = ballY - this.radius;
+		const bottom = ballY + this.radius;
+		
 		if (!outside) {
 			//walls
-			const right = ballX + this.radius;
-			const left = ballX - this.radius;
-			const top = ballY - this.radius;
-			const bottom = ballY + this.radius;
-
 			let reflections = {
 				top: false,
 				bottom: false,
@@ -127,10 +127,37 @@ export default class Ball {
 			}
 			return false;
 		}
+		else {
+			const topToBot = Math.abs(y1 - top);
+			const botToTop = Math.abs(y0 - bottom);
+			const leftToRight = Math.abs(x1 - left);
+			const rightToLeft = Math.abs(x0 - right);
+
+			const withinX = (right <= x1 && left >= x0);
+			const withinY = (bottom <= y1 && top >= y0);
+			if (withinX && withinY) {
+				const smallest = Math.min(...[topToBot, botToTop, leftToRight, rightToLeft]);
+				if (smallest === topToBot || smallest === botToTop) {
+					this._reflect(180);
+				} else {
+					this._reflect(0);
+				}
+				console.log(topToBot, botToTop, leftToRight, rightToLeft);
+				return true;
+			}
+		}
+		return false;
 	}
 
-	move(area) {
-		this.collisionCheck(this.x + this.dx, this.y + this.dy, area);
+	move(area, blocksArray) {
+		this.collisionCheck(this.x + this.dx, this.y + this.dy, { ...area, outside: false });
+		for (let i = 0; i < blocksArray.length; i++) {
+			const hit = this.collisionCheck(this.x + this.dx, this.y + this.dy, { ...blocksArray[i].corners, outside: true });
+
+			if (hit) {
+				blocksArray[i].hit();
+			}
+		}
 
 		this.x += this.dx;
 		this.y += this.dy;

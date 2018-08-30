@@ -31,6 +31,11 @@ export default class BlockLayout {
 		}
 	}
 
+	get blockArray() {
+		if (!Array.isArray(this.blocks)) return [];
+		return [].concat(...this.blocks).filter(v => v != null && v.active === true);
+	}
+
 	static init(layout) {
 		const { blocks: layoutBlocks, areaPadding, blockMargin, rows, cols, amount, blockHeightRatio } = layout;
 
@@ -128,7 +133,7 @@ export default class BlockLayout {
 	render(ctx, blockColor) {
 		for (let y = 0; y < this.rows; y++) {
 			for (let x = 0; x < this.blocks[y].length; x++) {
-				if (this.blocks[y][x] != null) {
+				if (this.blocks[y][x] != null && this.blocks[y][x].active === true) {
 					this.blocks[y][x].draw(ctx, blockColor);
 				}				
 			}

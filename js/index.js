@@ -84,9 +84,9 @@ class Game {
 		this.ball.render(this.ctx, "#CCCCCC");
 		return this;
 	}
-	
+
 	update() {
-		this.ball.move(this.area);
+		this.ball.move(this.area, this.blocks.blockArray);
 		// this.ball.move();
 
 		let paddleDir = 0;
