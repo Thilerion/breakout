@@ -7,6 +7,16 @@ export default class Paddle {
 		this.x, this.y, this.gameArea, this.bottomPadding;
 	}
 
+	get collisionPosition() {
+		return {
+			x0: this.x,
+			x1: this.x + this.width,
+			y0: this.y,
+			y1: this.y + this.height,
+			outside: true
+		}
+	}
+
 	setPosition(bottomPadding, gameArea) {
 		this.bottomPadding = bottomPadding;
 		this.gameArea = gameArea;

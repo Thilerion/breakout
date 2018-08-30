@@ -84,9 +84,10 @@ class Game {
 		this.ball.render(this.ctx, "#CCCCCC");
 		return this;
 	}
-
+	
 	update() {
-		this.ball.move();
+		this.ball.move(this.area);
+		// this.ball.move();
 
 		let paddleDir = 0;
 		if (this.keysActive.includes("ArrowLeft")) {

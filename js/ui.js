@@ -36,6 +36,13 @@ export default class UI {
 		};
 	}
 
+	get collisionPosition() {
+		return {
+			...this.gameArea,
+			outside: false
+		}
+	}
+
 	init() {
 		this.ctx.clearRect(0, 0, this.cWidth, this.cHeight);
 		this.drawBorder();
