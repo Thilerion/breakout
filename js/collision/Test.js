@@ -1,3 +1,5 @@
+import { Point } from './Objects.js';
+
 // TODO: REPLACES NULLS WITH DISTANCE OBJECTS
 // TODO: WATCH OUT WITH CIRCLE + LINE SEGMENT COLLISION! THERE CAN STILL BE A COLLISION IF pointClosesPointToLineSegment SAYS NOT, BECAUSE THE RADIUS OF THE CIRCLE COULD HAVE HIT THE LINE
 //		 SO, https://ericleong.me/old/research/leong10.pdf PAGE 10:

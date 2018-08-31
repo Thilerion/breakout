@@ -7,15 +7,31 @@ export class Point {
 
 export class Circle {
 	constructor(point, radius) {
-		this.point = point;
+
+		if (point instanceof Point) {
+			this.point = point;
+		} else {
+			this.point = new Point(point.x, point.y);
+		}
+		
 		this.radius = radius;
 	}
 }
 
 export class Line {
 	constructor(pointA, pointB) {
-		this.pointA = pointA;
-		this.pointB = pointB;
+
+		if (pointA instanceof Point) {
+			this.pointA = pointA;
+		} else {
+			this.pointA = new Point(pointA.x, pointA.y);
+		}
+
+		if (pointB instanceof Point) {
+			this.pointB = pointB;
+		} else {
+			this.pointB = new Point(pointB.x, pointB.y);
+		}
 	}
 
 	get points() {
@@ -25,7 +41,13 @@ export class Line {
 
 export class Rectangle {
 	constructor(point, width, height) {
-		this.startPoint = point;
+
+		if (point instanceof Point) {
+			this.startPoint = point;
+		} else {
+			this.startPoint = new Point(point.x, point.y);
+		}
+
 		this.width = width;
 		this.height = height;
 
