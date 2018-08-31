@@ -129,6 +129,12 @@ const Test = {
 		}
 	},
 
+	circleLineDistance(circle, line) {
+		const closest = Test.vectorClosestVectorToLine(circle.vector, line);
+		const distance = Test.vectorVectorDistance(closest, circle.vector) - circle.radius;
+		return distance;
+	},
+
 	circleLineSegmentCollision(circle, line) {
 		// Determine the distance from the circle to the line by first finding the closest vector on the line to the center of the circle (vector1) using the closest line on a vector to a line algorithm.
 		const closest = Test.vectorClosestVectorToLine(circle.vector, line);
