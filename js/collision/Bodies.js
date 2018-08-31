@@ -4,11 +4,7 @@ export class Vector {
 		this.y = y;
 	}
 
-	dot(vec) {
-		return this.x * vec.x + this.y + vec.y;
-	}
-
-	length() {
+	get len() {
 		return Math.sqrt(this.dot(this));
 	}
 
@@ -34,32 +30,34 @@ export class Vector {
 		return this;
 	}
 
-	multiply(vec) {
-		if (vec instanceof Vector) {
-			this.x *= vec.x;
-			this.y *= vec.y;
-		} else {
-			this.x *= vec;
-			this.y *= vec;
-		}
+	scale(v) {
+		// Multiply vector by a scalar, increasing its length/magnitude
+		this.x *= v;
+		this.y *= v;
 		return this;
 	}
 
-	divide(vec) {
-		if (vec instanceof Vector) {
-			if (vec.x != 0) this.x = this.x / vec.x;
-			if (vec.y != 0) this.y = this.y / vec.y;
-		} else {
-			if (vec != 0) {
-				this.x = this.x / vec;
-				this.y = this.y / vec;
-			}
+	dot(vec) {
+		// Multiply vector by a vector, returning a scalar
+		return this.x * vec.x + this.y * vec.y;
+	}
+
+	/*cross(vec) {
+		// Multiply vector by a vector, returning a vector
+		// The resulting vector is at right angles (orthogonal) to both previous vectors with 3d vectors
+		// With 2d vectors, the cross product is not defined
+	}*/
+
+	divide(v) {
+		// Opposite of scale
+		if (v != 0) {
+			return this.scale(1 / v);
 		}
 		return this;
 	}
 
 	normalize() {
-		return this.divide(this.length());
+		return this.divide(this.len);
 	}
 
 	set(x, y) {
