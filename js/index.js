@@ -53,7 +53,7 @@ class Game {
 			.setPosition(gameOptions.bottomPadding, this.area);
 		
 		this.ball = new Ball(gameOptions.ball)
-			.setPosition(this.paddle.y, this.area);
+			.setInitialPosition(this.paddle.y, this.area);
 		
 		return this;
 	}

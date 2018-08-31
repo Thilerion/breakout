@@ -8,7 +8,7 @@ export class Vector {
 		return this.x * vec.x + this.y + vec.y;
 	}
 
-	get length() {
+	length() {
 		return Math.sqrt(this.dot(this));
 	}
 
@@ -59,7 +59,7 @@ export class Vector {
 	}
 
 	normalize() {
-		return this.divide(this.length);
+		return this.divide(this.length());
 	}
 
 	set(x, y) {

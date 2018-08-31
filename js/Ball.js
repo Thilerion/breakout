@@ -1,15 +1,20 @@
+import { Vector, Line, Circle, Rectangle } from './collision/Bodies.js';
+
 export default class Ball {
 	constructor({ radius, speed }) {
 		this.radius = radius;
-		this.speed = speed * 1;
+		this.speed = speed;
 
 		//				270 (1.5 * PI)
 		// 180 (PI)						0 or 360 (0 or 2 * PI)
 		//				90 (0.5 * PI)
 		//this.angle = 315;
 
-		this.x, this.y, this.gameArea, this.paddleX;
-		this.vx = -0.6, this.vy = -1;
+		this.pos;
+		this.dir = new Vector(0.6, -1).normalize();
+		console.log(this.dir);
+		this.gameArea, this.paddleX;
+		this.vx = 0.6, this.vy = -1;
 	}
 
 	get diameter() {
@@ -24,21 +29,23 @@ export default class Ball {
 		return this.vy * this.speed;
 	}
 
-	setPosition(paddleX, gameArea) {
+	setInitialPosition(paddleX, gameArea) {
 		this.gameArea = gameArea;
 		this.paddleX = paddleX;
 
 		const areaWidth = this.gameArea.x1 - this.gameArea.x0;
-		this.x = this.gameArea.x0 + (areaWidth / 2);
 
-		this.y = this.paddleX - (this.radius * 2);
+		const x = this.gameArea.x0 + (areaWidth / 2);
+		const y = this.paddleX - (this.radius * 2);
+
+		this.pos = new Vector(x, y);
 
 		return this;
 	}
 
 	render(ctx, color) {
 		ctx.beginPath();
-		ctx.arc(this.x, this.y, this.radius * 2, 0, 2 * Math.PI, false);
+		ctx.arc(this.pos.x, this.pos.y, this.radius * 2, 0, 2 * Math.PI, false);
 		ctx.closePath();
 		ctx.fillStyle = color;
 		ctx.fill();
@@ -115,11 +122,11 @@ export default class Ball {
 			}
 
 			if (refAngle != null) {
-				this.x += overlapX;
-				this.y += overlapY;
+				this.pos.x += overlapX;
+				this.pos.y += overlapY;
 				this._reflect(refAngle);
 
-				if (this.x + this.dx < x0 || this.x + this.dx > x1 || this.y + this.dy < y0 || this.y + this.dy > y1) {
+				if (this.pos.x + this.dx < x0 || this.pos.x + this.dx > x1 || this.pos.y + this.dy < y0 || this.pos.y + this.dy > y1) {
 					console.warn("collided again!!");
 				}
 
@@ -149,16 +156,16 @@ export default class Ball {
 	}
 
 	move(area, blocksArray) {
-		this.collisionCheck(this.x + this.dx, this.y + this.dy, { ...area, outside: false });
+		this.collisionCheck(this.pos.x + this.dx, this.pos.y + this.dy, { ...area, outside: false });
 		for (let i = 0; i < blocksArray.length; i++) {
-			const hit = this.collisionCheck(this.x + this.dx, this.y + this.dy, { ...blocksArray[i].corners, outside: true });
+			const hit = this.collisionCheck(this.pos.x + this.dx, this.pos.y + this.dy, { ...blocksArray[i].corners, outside: true });
 
 			if (hit) {
 				blocksArray[i].hit();
 			}
 		}
 
-		this.x += this.dx;
-		this.y += this.dy;
+		this.pos.x += this.dx;
+		this.pos.y += this.dy;
 	}
 }
