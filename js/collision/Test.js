@@ -113,11 +113,46 @@ const Test = {
 	},
 
 	circleLineCollision(circle, line) {
+		// Determine the distance from the circle to the line by first finding the closest point on the line to the center of the circle (point1) using the closest line on a point to a line algorithm.
+		const closest = pointClosestPointToLine(circle.point, line);
+		const distance = this.pointPointDistance(closest, circle.point);
 
+		if (distance === 0) {
+			console.log("Circle is exactly on the line.");
+			return 0;
+		} else if (distance < circle.radius) {
+			console.log("Circle is touching the line.");
+			return distance;
+		} else {
+			console.log("Circle is not touching the line.");
+			return null;
+		}
 	},
 
 	circleLineSegmentCollision(circle, line) {
+		// Determine the distance from the circle to the line by first finding the closest point on the line to the center of the circle (point1) using the closest line on a point to a line algorithm.
+		const closest = pointClosestPointToLine(circle.point, line);
+		const closestOnSegment = pointLineSegment(closest, circle.point);
+		const distance = this.pointPointDistance(closest, circle.point);
 
+		if (closestOnSegment && distance === 0) {
+			console.log("Circle is exactly on the line.");
+			return true;
+		} else if (closestOnSegment && distance < circle.radius) {
+			console.log("Circle is touching the line.");
+			return true;
+		} else if (!closestOnSegment) {
+			const distanceEndpointA = pointPointDistance(line.pointA, circle.point);
+			const distanceEndpointB = pointPointDistance(line.pointB, circle.point);
+			if (distanceEndpointA < circle.radius || distanceEndpointB < circle.radius) {
+				console.log("Closest point of circle is not on the line segment. However, one edge of the line segment is less than radius away from the circle, so there was a collision.");
+				// TODO: return something of an object that has additional info, such as that the collision was with an endpoint (so the collision response vector can be adjusted)
+				return true;
+			}
+		} else {
+			console.log("Circle is not touching the line.");
+			return null;
+		}
 	}
 }
 
