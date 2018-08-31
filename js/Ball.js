@@ -63,31 +63,30 @@ export default class Ball {
 	collisionCheckRect(rectangle, circle) {
 		let returnVal = false;
 		for (let edge of rectangle.edges) {
-			/*let collided = !!(Test.circleLineSegmentCollision(circle, edge));
-			collided = false;
+			const collided = !!(Test.movingCircleLineSegmentCollision(circle, this.mov, edge));
 			if (collided) {
 				returnVal = true;
 				const normalAxis = edge.getNormal().normalize();
 				this.dir.reflect(normalAxis);
-			} else {*/
-				// Check movement vector
-				const collided2 = !!(Test.movingCircleLineSegmentCollision(circle, this.mov, edge));
-				if (collided2) {
-					//debugger;
-					returnVal = true;
-					const normalAxis = edge.getNormal().normalize();
-					this.dir.reflect(normalAxis);
-				//}
 			}
 		}
 		return returnVal;
 	}
 
-	move(area, blocksArray) {
+	move(paddle, blocksArray) {
 		const rectangle = new Rectangle(new Vector(this.gameArea.x0, this.gameArea.y0), this.gameArea.x1 - this.gameArea.x0, this.gameArea.y1 - this.gameArea.y0);
 		const circle = new Circle(this.pos, this.radius);
 
 		let collided = this.collisionCheckRect(rectangle, circle);
+
+		for (let b = 0; b < blocksArray.length; b++) {
+			let r = new Rectangle(new Vector(blocksArray[b].x, blocksArray[b].y), blocksArray[b].w, blocksArray[b].h);
+			if (this.collisionCheckRect(r, circle)) {
+				blocksArray[b].hit();
+			}
+		}
+
+		this.collisionCheckRect(new Rectangle(new Vector(paddle.x, paddle.y), paddle.width, paddle.height), circle);
 		
 		this.pos.add(this.mov);
 	}

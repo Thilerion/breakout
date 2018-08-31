@@ -86,7 +86,7 @@ class Game {
 	}
 
 	update() {
-		this.ball.move(this.area, this.blocks.blockArray);
+		this.ball.move(this.paddle, this.blocks.blockArray);
 		// this.ball.move();
 
 		let paddleDir = 0;
