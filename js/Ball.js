@@ -1,9 +1,10 @@
 import { Vector, Line, Circle, Rectangle } from './collision/Bodies.js';
+import Test from './collision/Test.js';
 
 export default class Ball {
 	constructor({ radius, speed }) {
 		this.radius = radius;
-		this.speed = speed;
+		this.speed = speed * 1;
 
 		//				270 (1.5 * PI)
 		// 180 (PI)						0 or 360 (0 or 2 * PI)
@@ -11,10 +12,11 @@ export default class Ball {
 		//this.angle = 315;
 
 		this.pos;
-		this.dir = new Vector(0.6, -1).normalize();
-		console.log(this.dir);
+		this.dir = new Vector(1.2, -1).normalize();
 		this.gameArea, this.paddleX;
-		this.vx = 0.6, this.vy = -1;
+
+		
+		//this.vx = 0.6, this.vy = -1;
 	}
 
 	get diameter() {
@@ -22,11 +24,11 @@ export default class Ball {
 	}
 
 	get dx() {
-		return this.vx * this.speed;
+		return this.dir.x * this.speed;
 	}
 
 	get dy() {
-		return this.vy * this.speed;
+		return this.dir.y * this.speed;
 	}
 
 	setInitialPosition(paddleX, gameArea) {
@@ -64,13 +66,15 @@ export default class Ball {
 	}
 
 	_reflect(objectAngle) {
+		return;
 		const nx = -Math.sin(this._toRadians(objectAngle));
 		const ny = Math.cos(this._toRadians(objectAngle));
 
-		const dot = this.vx * nx + this.vy * ny;
+		const dot = this.dir.x * nx + this.dir.y * ny;
 
-		this.vx = this.vx - 2 * dot * nx;
-		this.vy = this.vy - 2 * dot * ny;
+		const newVx = this.dir.x - 2 * dot * nx;
+		const newVy = this.dir.y - 2 * dot * ny;
+		this.dir = this.dir.set(newVx, newVy);
 	}
 
 	collisionCheck(ballX, ballY, { x0, x1, y0, y1, outside }) {
@@ -155,16 +159,41 @@ export default class Ball {
 		return false;
 	}
 
+	collisionCheckRect(rectangle, circle) {
+		let returnVal = false;
+		for (let edge of rectangle.edges) {
+			const collided = !!(Test.circleLineSegmentCollision(circle, edge));
+			if (collided) {
+				returnVal = true;
+				const normalAxis = edge.getNormal().normalize();
+				this.dir.reflect(normalAxis);
+			}
+		}
+		return returnVal;
+	}
+
 	move(area, blocksArray) {
-		this.collisionCheck(this.pos.x + this.dx, this.pos.y + this.dy, { ...area, outside: false });
+		//const lineRight = new Line(new Vector(area.x1, area.y0), new Vector(area.x1, area.y1));
+		//console.log(lineRight.normals.map(v => v.normalize()));
+		const rectangle = new Rectangle(new Vector(area.x0, area.y0), area.x1 - area.x0, area.y1 - area.y0);
+		const circle = new Circle(this.pos.copy().add(this.dir.copy().scale(this.speed)), this.radius);
+
+		let collided = this.collisionCheckRect(rectangle, circle);
+		
+		/*
+		if (this.collisionCheck(this.pos.x + this.dx, this.pos.y + this.dy, { ...area, outside: false })) {
+			this.dir.reflect(normal);
+			console.log(this.dir);
+			console.log(normal);
+		}
 		for (let i = 0; i < blocksArray.length; i++) {
 			const hit = this.collisionCheck(this.pos.x + this.dx, this.pos.y + this.dy, { ...blocksArray[i].corners, outside: true });
 
 			if (hit) {
 				blocksArray[i].hit();
 			}
-		}
-
+		}*/
+		if (collided) debugger;
 		this.pos.x += this.dx;
 		this.pos.y += this.dy;
 	}

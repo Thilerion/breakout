@@ -114,43 +114,43 @@ const Test = {
 
 	circleLineCollision(circle, line) {
 		// Determine the distance from the circle to the line by first finding the closest vector on the line to the center of the circle (vector1) using the closest line on a vector to a line algorithm.
-		const closest = vectorClosestVectorToLine(circle.vector, line);
-		const distance = this.vectorVectorDistance(closest, circle.vector);
+		const closest = Test.vectorClosestVectorToLine(circle.vector, line);
+		const distance = Test.vectorVectorDistance(closest, circle.vector);
 
 		if (distance === 0) {
-			console.log("Circle is exactly on the line.");
+			//console.log("Circle is exactly on the line.");
 			return 0;
 		} else if (distance < circle.radius) {
-			console.log("Circle is touching the line.");
+			//console.log("Circle is touching the line.");
 			return distance;
 		} else {
-			console.log("Circle is not touching the line.");
+			//console.log("Circle is not touching the line.");
 			return null;
 		}
 	},
 
 	circleLineSegmentCollision(circle, line) {
 		// Determine the distance from the circle to the line by first finding the closest vector on the line to the center of the circle (vector1) using the closest line on a vector to a line algorithm.
-		const closest = vectorClosestVectorToLine(circle.vector, line);
-		const closestOnSegment = vectorLineSegment(closest, circle.vector);
-		const distance = this.vectorVectorDistance(closest, circle.vector);
+		const closest = Test.vectorClosestVectorToLine(circle.vector, line);
+		const closestOnSegment = Test.vectorLineSegment(closest, line);
+		const distance = Test.vectorVectorDistance(closest, circle.vector);
 
 		if (closestOnSegment && distance === 0) {
-			console.log("Circle is exactly on the line.");
+			//console.log("Circle is exactly on the line.");
 			return true;
 		} else if (closestOnSegment && distance < circle.radius) {
-			console.log("Circle is touching the line.");
+			//console.log("Circle is touching the line.");
 			return true;
 		} else if (!closestOnSegment) {
-			const distanceEndvectorA = vectorVectorDistance(line.vectorA, circle.vector);
-			const distanceEndvectorB = vectorVectorDistance(line.vectorB, circle.vector);
+			const distanceEndvectorA = Test.vectorVectorDistance(line.vectorA, circle.vector);
+			const distanceEndvectorB = Test.vectorVectorDistance(line.vectorB, circle.vector);
 			if (distanceEndvectorA < circle.radius || distanceEndvectorB < circle.radius) {
-				console.log("Closest vector of circle is not on the line segment. However, one edge of the line segment is less than radius away from the circle, so there was a collision.");
+				//console.log("Closest vector of circle is not on the line segment. However, one edge of the line segment is less than radius away from the circle, so there was a collision.");
 				// TODO: return something of an object that has additional info, such as that the collision was with an endvector (so the collision response vector can be adjusted)
 				return true;
 			}
 		} else {
-			console.log("Circle is not touching the line.");
+			//console.log("Circle is not touching the line.");
 			return null;
 		}
 	}

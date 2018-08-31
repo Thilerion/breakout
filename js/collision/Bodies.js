@@ -65,6 +65,30 @@ export class Vector {
 		this.y = y;
 		return this;
 	}
+
+	copy() {
+		return new Vector(this.x, this.y);
+	}
+
+	getPerp() {
+		// To get the 2D vector perpendicular (its normal) to another 2D vector simply swap the X and Y components and negate the new Y component. So { x, y } becomes { y | -x }.
+		return new Vector(this.y, -this.x);
+		// Also possible: (-y|x) is the right-hand side vector.
+	}
+
+	project(normalAxis) {
+		console.log(this.x, this.y);
+		const amt = this.dot(normalAxis);
+		this.x = amt * normalAxis.x;
+		this.y = amt * normalAxis.y;
+		return this;
+	}
+
+	reflect(normalAxis) {
+		const dotdot = this.dot(normalAxis.copy()) * 2;
+		const ref = normalAxis.copy().scale(dotdot);
+		return this.subtract(ref);
+	}
 }
 
 export class Circle {
@@ -99,6 +123,12 @@ export class Line {
 	get vectors() {
 		return [this.vectorA, this.vectorB];
 	}
+
+	getNormal() {
+		return this.vectorA.copy().subtract(this.vectorB).getPerp();
+	}
+
+
 }
 
 export class Rectangle {
