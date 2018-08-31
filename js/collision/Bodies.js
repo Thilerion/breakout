@@ -42,12 +42,6 @@ export class Vector {
 		return this.x * vec.x + this.y * vec.y;
 	}
 
-	/*cross(vec) {
-		// Multiply vector by a vector, returning a vector
-		// The resulting vector is at right angles (orthogonal) to both previous vectors with 3d vectors
-		// With 2d vectors, the cross product is not defined
-	}*/
-
 	divide(v) {
 		// Opposite of scale
 		if (v != 0) {
@@ -102,6 +96,10 @@ export class Circle {
 		
 		this.radius = radius;
 	}
+
+	copy() {
+		return new Circle(this.vector.copy(), this.radius);
+	}
 }
 
 export class Line {
@@ -127,8 +125,6 @@ export class Line {
 	getNormal() {
 		return this.vectorA.copy().subtract(this.vectorB).getPerp();
 	}
-
-
 }
 
 export class Rectangle {

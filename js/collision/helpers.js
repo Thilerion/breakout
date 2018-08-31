@@ -1,8 +1,3 @@
-// const radToDeg = rad => {
-// 	let deg = rad * 180 / Math.PI;
-// 	return deg < 0 ? deg + 360 : deg;
-// }
-
 function radToDeg(rad) {
 	let deg = rad * (180 / Math.PI);
 	if (deg > 360) {
@@ -14,4 +9,9 @@ function radToDeg(rad) {
 	return deg;
 }
 
-export { radToDeg };
+function fixFloat(n) {
+	const returnValue = Math.round(n * 1e8) / 1e8;
+	return returnValue;
+}
+
+export { radToDeg, fixFloat };

@@ -4,11 +4,25 @@ import Test from './collision/Test.js';
 export default class Ball {
 	constructor({ radius, speed }) {
 		this.radius = radius;
-		this.speed = speed * 25;
+		this.speed = speed * 10;
 
-		this.pos;
+		this._pos = new Vector();
+		this._mov = new Vector();
 		this.dir = new Vector(0.6, -1).normalize();
 		this.gameArea, this.paddleX;
+		this.circleBody = new Circle(new Vector(), radius);
+	}
+
+	set pos({x, y}) {
+		this._pos.set(x, y);
+	}
+
+	get pos() {
+		return this._pos;
+	}
+
+	get mov() {
+		return this._mov.set(this.dir.x, this.dir.y).scale(this.speed);
 	}
 
 	get diameter() {
@@ -49,11 +63,21 @@ export default class Ball {
 	collisionCheckRect(rectangle, circle) {
 		let returnVal = false;
 		for (let edge of rectangle.edges) {
-			const collided = !!(Test.circleLineSegmentCollision(circle, edge));
+			/*let collided = !!(Test.circleLineSegmentCollision(circle, edge));
+			collided = false;
 			if (collided) {
 				returnVal = true;
 				const normalAxis = edge.getNormal().normalize();
 				this.dir.reflect(normalAxis);
+			} else {*/
+				// Check movement vector
+				const collided2 = !!(Test.movingCircleLineSegmentCollision(circle, this.mov, edge));
+				if (collided2) {
+					//debugger;
+					returnVal = true;
+					const normalAxis = edge.getNormal().normalize();
+					this.dir.reflect(normalAxis);
+				//}
 			}
 		}
 		return returnVal;
@@ -61,13 +85,10 @@ export default class Ball {
 
 	move(area, blocksArray) {
 		const rectangle = new Rectangle(new Vector(this.gameArea.x0, this.gameArea.y0), this.gameArea.x1 - this.gameArea.x0, this.gameArea.y1 - this.gameArea.y0);
-		const circle = new Circle(this.pos.copy().add(this.dir.copy().scale(this.speed)), this.radius);
+		const circle = new Circle(this.pos, this.radius);
 
 		let collided = this.collisionCheckRect(rectangle, circle);
 		
-		this.pos.x += this.dx;
-		this.pos.y += this.dy;
-
-		if (this.pos.y < 20) debugger;
+		this.pos.add(this.mov);
 	}
 }

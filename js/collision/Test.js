@@ -1,4 +1,5 @@
-import { Vector } from './Bodies.js';
+import { Vector, Circle, Line } from './Bodies.js';
+import { fixFloat as fp } from './helpers.js';
 
 // TODO: REPLACES NULLS WITH DISTANCE OBJECTS
 // TODO: WATCH OUT WITH CIRCLE + LINE SEGMENT COLLISION! THERE CAN STILL BE A COLLISION IF vectorClosesVectorToLineSegment SAYS NOT, BECAUSE THE RADIUS OF THE CIRCLE COULD HAVE HIT THE LINE
@@ -36,18 +37,18 @@ const Test = {
 
 			return new Vector(x, y);
 		} else {
-			console.warn(`Determinant (${det}) is zero, so no solutions.`);
+			//console.warn(`Determinant (${det}) is zero, so no solutions.`);
 			return null;
 		}
 	},
 
 	vectorLineSegment(vector, line) {
 		const [l1, l2] = line.vectors;
-		const x = vector.x;
-		const y = vector.y;
+		const x = fp(vector.x);
+		const y = fp(vector.y);
 		
-		const onX = (Math.min(l1.x, l2.x) <= x) && (x <= Math.max(l1.x, l2.x));
-		const onY = (Math.min(l1.y, l2.y) <= y) && (y <= Math.max(l1.y, l2.y));
+		const onX = (Math.min(fp(l1.x), fp(l2.x)) <= x) && (x <= Math.max(fp(l1.x), fp(l2.x)));
+		const onY = (Math.min(fp(l1.y), fp(l2.y)) <= y) && (y <= Math.max(fp(l1.y), fp(l2.y)));
 
 		return (onX && onY);
 	},
@@ -60,7 +61,7 @@ const Test = {
 		if (Test.vectorLineSegment(intersection, lineA) && Test.vectorLineSegment(intersection, lineB)) {
 			return intersection;
 		} else {
-			console.warn(`Intersection found (${intersection.x}, ${intersection.y}) was not on both lines.`);
+			//console.warn(`Intersection found (${intersection.x}, ${intersection.y}) was not on both lines.`);
 			return null;
 		}
 	},
@@ -96,12 +97,13 @@ const Test = {
 		return new Vector(Cx, Cy);
 	},
 
-	vectorClosesVectorToLineSegment(vector, line) {
+	vectorClosestVectorToLineSegment(vector, line) {
 		const closest = Test.vectorClosestVectorToLine(vector, line);
 		if (Test.vectorLineSegment(closest, line)) {
 			return closest;
 		} else {
-			console.warn("The closest vector is not on the line. If this is checking a circle, the radius may have hit the endvector though.");
+			// console.warn("The closest vector is not on the line. If this is checking a circle, the radius may have hit the endvector though.");
+			return null;
 		}
 	},
 
@@ -117,10 +119,10 @@ const Test = {
 		const closest = Test.vectorClosestVectorToLine(circle.vector, line);
 		const distance = Test.vectorVectorDistance(closest, circle.vector);
 
-		if (distance === 0) {
+		if (fp(distance) === 0) {
 			//console.log("Circle is exactly on the line.");
 			return 0;
-		} else if (distance < circle.radius) {
+		} else if (fp(distance) < circle.radius) {
 			//console.log("Circle is touching the line.");
 			return distance;
 		} else {
@@ -141,10 +143,10 @@ const Test = {
 		const closestOnSegment = Test.vectorLineSegment(closest, line);
 		const distance = Test.vectorVectorDistance(closest, circle.vector);
 
-		if (closestOnSegment && distance === 0) {
+		if (closestOnSegment && fp(distance) === 0) {
 			//console.log("Circle is exactly on the line.");
 			return true;
-		} else if (closestOnSegment && distance < circle.radius) {
+		} else if (closestOnSegment && fp(distance) < circle.radius) {
 			//console.log("Circle is touching the line.");
 			return true;
 		} else if (!closestOnSegment) {
@@ -159,6 +161,43 @@ const Test = {
 			//console.log("Circle is not touching the line.");
 			return null;
 		}
+	},
+
+	movingCircleLineSegmentCollision(circle, circleMovementVector, line) {
+		//const collisionNow = Test.circleLineSegmentCollision(circle, line);
+		// This collisionNow is not even necessary I think...
+		//if (!!collisionNow) {
+		//	return collisionNow;
+		//}
+
+		const nextCirclePosition = circle.vector.copy().add(circleMovementVector);
+		const movementLine = new Line(circle.vector.copy(), nextCirclePosition);
+
+		// Point of intersection between 'line' and circle's 'movement vector'
+		const lineMovIntersect = Test.lineSegmentLineSegmentIntersection(movementLine, line);
+		// Closest point on 'line' to endpoint of circle's movement vector
+		const closestLineMovVectorEndpoint = Test.vectorClosestVectorToLineSegment(nextCirclePosition, line);
+		// Closest point on movement vector to line segment startpoint
+		const closestMovVectorLineStartpoint = Test.vectorClosestVectorToLineSegment(line.vectorA, movementLine);
+		// Closest point on movement vector line segment endpoint
+		const closestMovVectorLineEndpoint = Test.vectorClosestVectorToLineSegment(line.vectorB, movementLine);
+
+		// Collision only possible if any of:
+		// lineMovIntersect on line AND movement vector
+		// closestLineMovVectorEndpoint less than radius away from endpoint of the movement vector, and is on the line segment
+		// closestMovVectorLineStartpoint less than radius away from line startpoint and is on movement vector
+		// closestMovVectorLineEndpoint less than radius away from line endpoint and is on movement vector
+
+		const possibleA = !!lineMovIntersect;
+		const possibleB = closestLineMovVectorEndpoint && Test.vectorVectorDistance(closestLineMovVectorEndpoint, nextCirclePosition) < circle.radius;
+		const possibleC = closestMovVectorLineStartpoint && Test.vectorVectorDistance(closestMovVectorLineStartpoint, line.vectorA) < circle.radius;
+		const possibleD = closestMovVectorLineEndpoint && Test.vectorVectorDistance(closestMovVectorLineEndpoint, line.vectorB) < circle.radius;
+		
+		if (possibleA || possibleB || possibleC || possibleD) {
+			//debugger;
+			return true;
+		}
+		return false;
 	}
 }
 
