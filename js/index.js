@@ -86,9 +86,6 @@ class Game {
 	}
 
 	update() {
-		this.ball.move(this.paddle, this.blocks.blockArray);
-		// this.ball.move();
-
 		let paddleDir = 0;
 		if (this.keysActive.includes("ArrowLeft")) {
 			paddleDir -= 1;
@@ -97,6 +94,9 @@ class Game {
 			paddleDir += 1;
 		}
 		this.paddle.move(paddleDir);
+
+		// ball should move after paddle, or else the ball collides where the paddle was
+		this.ball.move(this.paddle, this.blocks.blockArray);
 	}
 }
 

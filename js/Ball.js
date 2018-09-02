@@ -4,7 +4,7 @@ import Test from './collision/Test.js';
 export default class Ball {
 	constructor({ radius, speed }) {
 		this.radius = radius;
-		this.speed = speed * 10;
+		this.speed = speed * 4;
 
 		this._pos = new Vector();
 		this._mov = new Vector();
@@ -62,9 +62,11 @@ export default class Ball {
 
 	collisionCheckRect(rectangle, circle) {
 		let returnVal = false;
+		// TODO: ball still goes through corners of bricks, and glitches inside paddle
+		// https://stackoverflow.com/questions/21089959/detecting-collision-of-rectangle-with-circle
 		for (let edge of rectangle.edges) {
-			const collided = !!(Test.movingCircleLineSegmentCollision(circle, this.mov, edge));
-			if (collided) {
+			const collided = Test.movingCircleLineSegmentCollision(circle, this.mov, edge);
+			if (!!collided) {
 				returnVal = true;
 				const normalAxis = edge.getNormal().normalize();
 				this.dir.reflect(normalAxis);

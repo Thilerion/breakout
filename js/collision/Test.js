@@ -134,7 +134,7 @@ const Test = {
 	circleLineDistance(circle, line) {
 		const closest = Test.vectorClosestVectorToLine(circle.vector, line);
 		const distance = Test.vectorVectorDistance(closest, circle.vector) - circle.radius;
-		return distance;
+		return Math.abs(distance);
 	},
 
 	circleLineSegmentCollision(circle, line) {
@@ -195,7 +195,8 @@ const Test = {
 		
 		if (possibleA || possibleB || possibleC || possibleD) {
 			//debugger;
-			return true;
+			return { d: Test.circleLineDistance(circle, line) };
+			//return true;
 		}
 		return false;
 	}
